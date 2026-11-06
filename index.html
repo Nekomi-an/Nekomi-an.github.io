@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPP Tracker 2570 | อ.ขุนหาญ</title>
+    <title>CPP Tracker 2570 | อ.ขุนหาญ จ.ศรีสะเกษ</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -183,6 +183,12 @@
             border: 1px solid rgba(255, 51, 102, 0.3);
         }
 
+        .status-pending {
+            background: rgba(251, 191, 36, 0.1);
+            color: var(--neon-yellow);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
         .btn-view {
             background: rgba(255, 255, 255, 0.1);
             border: none;
@@ -199,13 +205,11 @@
             color: #000;
         }
 
-        /* Highlight Row for issues */
         .row-issue {
             border-left: 3px solid var(--neon-red);
             background: rgba(255, 51, 102, 0.05);
         }
 
-        /* AI Assistant Floating Button */
         .ai-assistant {
             position: fixed;
             bottom: 2rem;
@@ -235,29 +239,29 @@
     <div class="header">
         <div>
             <h1>CPP TRACKER 2570</h1>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">ระบบติดตามสถานะการประเมิน สปสช. (เฉพาะอำเภอขุนหาญ)</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">ระบบติดตามสถานะการประเมิน สปสช. (เฉพาะ อ.ขุนหาญ จ.ศรีสะเกษ)</p>
         </div>
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อ รพ.สต., ตำบล...">
+            <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อหน่วยงาน, ตำบล...">
         </div>
     </div>
 
     <!-- KPI Cards -->
     <div class="kpi-grid">
         <div class="kpi-card">
-            <div class="kpi-title">สถานบริการทั้งหมด (ในขุนหาญ)</div>
+            <div class="kpi-title">สถานบริการทั้งหมด (อ.ขุนหาญ)</div>
             <div class="kpi-value" id="totalCount">0</div>
         </div>
         <div class="kpi-card">
-            <div class="kpi-title">🟢 เสร็จสิ้น (รอพิจารณา/ผ่าน)</div>
+            <div class="kpi-title">🟢 เสร็จสิ้น (รอพิจารณา / ผ่าน)</div>
             <div class="kpi-value text-green" id="passCount">0</div>
         </div>
         <div class="kpi-card">
-            <div class="kpi-title">🔴 ต้องแก้ไข / ยังไม่ผ่าน</div>
+            <div class="kpi-title">🔴 ยังไม่ดำเนินการ</div>
             <div class="kpi-value text-red" id="failCount">0</div>
         </div>
         <div class="kpi-card">
-            <div class="kpi-title">⚪ อื่นๆ / อยู่ระหว่างดำเนินการ</div>
+            <div class="kpi-title">🟡 อยู่ระหว่างดำเนินการ</div>
             <div class="kpi-value text-yellow" id="pendingCount">0</div>
         </div>
     </div>
@@ -265,9 +269,9 @@
     <!-- Filters -->
     <div class="filters">
         <button class="filter-btn active" data-filter="all">ทั้งหมด</button>
-        <button class="filter-btn" data-filter="pass">🟢 เสร็จสิ้น/รอพิจารณา</button>
-        <button class="filter-btn" data-filter="fail">🔴 ต้องแก้ไข (ไม่ผ่าน)</button>
-        <button class="filter-btn" data-filter="other">⚪ อื่นๆ</button>
+        <button class="filter-btn" data-filter="pass">🟢 เสร็จสิ้น (รอพิจารณา/ผ่าน)</button>
+        <button class="filter-btn" data-filter="pending">🟡 อยู่ระหว่างดำเนินการ</button>
+        <button class="filter-btn" data-filter="fail">🔴 ยังไม่ดำเนินการ</button>
     </div>
 
     <!-- Data Table -->
@@ -275,6 +279,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>รหัส</th>
                     <th>ชื่อหน่วยงาน</th>
                     <th>ประเภท</th>
                     <th>สถานะการประเมิน</th>
@@ -286,66 +291,68 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <!-- Data will be injected here -->
+                <!-- Data injected here -->
             </tbody>
         </table>
     </div>
 
-    <!-- AI Assistant (Mockup) -->
-    <div class="ai-assistant" onclick="alert('🤖 AI Assistant: ข้อมูลนี้คือเฉพาะอำเภอขุนหาญครับ!')">
+    <!-- AI Assistant Mockup -->
+    <div class="ai-assistant" onclick="alert('🤖 AI Assistant: ข้อมูลถูกต้องเฉพาะอำเภอขุนหาญ จังหวัดศรีสะเกษ 27 รายการเรียบร้อยครับ!')">
         🤖
     </div>
 
     <script>
-        // ข้อมูลจริงจากภาพ เฉพาะอำเภอขุนหาญ (27 รายการ)
+        // ข้อมูลตรงตามภาพ Excel เฉพาะ อ.ขุนหาญ จ.ศรีสะเกษ (27 รายการ)
         const rawData = [
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านหนองหญ้า", type: "หน่วยบริการปฐมภูมิ", status: "รอพิจารณา", tambon: "ขุนหาญ", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านสหักดิน", type: "หน่วยบริการปฐมภูมิ", status: "ยังไม่ดำเนินการ", tambon: "ปากอ", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านสระโกฎิ", type: "หน่วยบริการปฐมภูมิ", status: "รอพิจารณา", tambon: "ปากอ", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านทับยา", type: "หน่วยบริการปฐมภูมิ", status: "ยังไม่ดำเนินการ", tambon: "ปากอ", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนาเหนือ ตำบลพราน", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "พราน", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านบางเบา", type: "หน่วยบริการปฐมภูมิ", status: "ยังไม่ดำเนินการ", tambon: "พราน", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านข่าหลึก", type: "หน่วยบริการปฐมภูมิ", status: "ยังไม่ดำเนินการ", tambon: "พราน", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านโพธิ์งาม", type: "หน่วยบริการปฐมภูมิ", status: "รอพิจารณา", tambon: "โพธิ์งาม", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านพราน", type: "หน่วยบริการปฐมภูมิ", status: "รอพิจารณา", tambon: "พราน", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านข้าม", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "กระวิน", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านทับจวด", type: "หน่วยบริการปฐมภูมิ", status: "ยังไม่ดำเนินการ", tambon: "ในลุ", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านทุ่งหมื่น", type: "หน่วยบริการปฐมภูมิ", status: "ยังไม่ดำเนินการ", tambon: "ทุ่งหมื่น", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนาโพธิ์", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "ทุ่งหมื่น", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านทุ่งคา", type: "หน่วยบริการปฐมภูมิ", status: "รอพิจารณา", tambon: "ทุ่งคา", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านไร่", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "ไร่", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านในลุ", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "ในลุ", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านปากน้ำ", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "ปากน้ำ", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลชุมชนบ้านหนองบัว", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "ภูฝ้าย", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลชุมชนบ้านหนองบัว", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "ภูฝ้าย", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลชุมชนบ้านหนองบัว", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "ภูฝ้าย", amphoe: "ขุนหาญ", issue: "" },
-            { name: "โรงพยาบาลชุมชนบ้านหนองบัว", type: "หน่วยบริการที่ทำการส่งต่อทั่วไป", status: "อยู่ระหว่างดำเนินการ", tambon: "ภูฝ้าย", amphoe: "ขุนหาญ", issue: "R0101" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านโพธิ์น้อย", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "กระวิน", amphoe: "ขุนหาญ", issue: "" },
-            { name: "กลุ่มงานกิจการขนาน", type: "หน่วยบริการที่ทำการส่งต่อเฉพาะด้านการอาชีวอนามัยและโรคติดต่อทางเพศสัมพันธ์ในชุมชน", status: "ผ่านการตรวจประเมิน", tambon: "กระวิน", amphoe: "ขุนหาญ", issue: "" },
-            { name: "ศูนย์บริการสาธารณสุขการตรวจวัดชีพจร", type: "หน่วยบริการที่ทำการส่งต่อเฉพาะด้านการแพทย์แผนไทย", status: "ยังไม่ดำเนินการ", tambon: "ในลุ", amphoe: "ขุนหาญ", issue: "R0216" },
-            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านโพธิ์น้อย", type: "หน่วยบริการที่ทำการส่งต่อเฉพาะด้านอาชีวอนามัย", status: "ยังไม่ดำเนินการ", tambon: "กระวิน", amphoe: "ขุนหาญ", issue: "R0214" },
-            { name: "สำนักงานสาธารณสุขอำเภอขุนหาญ", type: "หน่วยบริการที่ทำการส่งต่อเฉพาะด้านสร้างเสริมสุขภาพและป้องกันโรค", status: "รอพิจารณา", tambon: "กระวิน", amphoe: "ขุนหาญ", issue: "R0212" }
+            { code: "03394", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านขุนหาญ", type: "1.หน่วยบริการปฐมภูมิ", status: "2.รอพิจารณา", tambon: "ขุนหาญ", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03395", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านหลักหิน", type: "1.หน่วยบริการปฐมภูมิ", status: "5.ยังไม่ดำเนินการ", tambon: "บัคดอง", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03396", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านสำโรงเกียรติ", type: "1.หน่วยบริการปฐมภูมิ", status: "2.รอพิจารณา", tambon: "บัคดอง", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03397", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านทับสยาม", type: "1.หน่วยบริการปฐมภูมิ", status: "5.ยังไม่ดำเนินการ", tambon: "บัคดอง", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03398", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านพรานเหนือ ตำบลพราน", type: "1.หน่วยบริการปฐมภูมิ", status: "4.อยู่ระหว่างดำเนินการ", tambon: "พราน", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03399", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านม่วงแยก", type: "1.หน่วยบริการปฐมภูมิ", status: "5.ยังไม่ดำเนินการ", tambon: "พราน", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03400", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านข่าเหล็ก", type: "1.หน่วยบริการปฐมภูมิ", status: "5.ยังไม่ดำเนินการ", tambon: "พราน", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03401", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านโพธิ์วงศ์", type: "1.หน่วยบริการปฐมภูมิ", status: "2.รอพิจารณา", tambon: "โพธิ์วงศ์", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03402", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านกราม", type: "1.หน่วยบริการปฐมภูมิ", status: "2.รอพิจารณา", tambon: "ไพร", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03403", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านหัวเขียน", type: "1.หน่วยบริการปฐมภูมิ", status: "2.รอพิจารณา", tambon: "ไพร", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03404", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านกันจวด", type: "1.หน่วยบริการปฐมภูมิ", status: "4.อยู่ระหว่างดำเนินการ", tambon: "ตระกาจ", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03405", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านหนองบัว", type: "1.หน่วยบริการปฐมภูมิ", status: "5.ยังไม่ดำเนินการ", tambon: "โนนสูง", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03406", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านตรอมหนอง", type: "1.หน่วยบริการปฐมภูมิ", status: "5.ยังไม่ดำเนินการ", tambon: "กันทรอม", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03407", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านตาตวน", type: "1.หน่วยบริการปฐมภูมิ", status: "4.อยู่ระหว่างดำเนินการ", tambon: "กันทรอม", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03408", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านภูทอง", type: "1.หน่วยบริการปฐมภูมิ", status: "2.รอพิจารณา", tambon: "ภูฝ้าย", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03409", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านโพธิ์กระสังข์", type: "1.หน่วยบริการปฐมภูมิ", status: "4.อยู่ระหว่างดำเนินการ", tambon: "โพธิ์กระสังข์", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03410", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านกันตรวจ", type: "1.หน่วยบริการปฐมภูมิ", status: "5.ยังไม่ดำเนินการ", tambon: "ห้วยจันทร์", amphoe: "ขุนหาญ", issue: "" },
+            { code: "03411", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านห้วยจันทร์", type: "1.หน่วยบริการปฐมภูมิ", status: "5.ยังไม่ดำเนินการ", tambon: "ห้วยจันทร์", amphoe: "ขุนหาญ", issue: "" },
+            { code: "10933", name: "โรงพยาบาลชุมชนขุนหาญ", type: "2.หน่วยบริการประจำ", status: "4.อยู่ระหว่างดำเนินการ", tambon: "สิ", amphoe: "ขุนหาญ", issue: "" },
+            { code: "10933", name: "โรงพยาบาลชุมชนขุนหาญ", type: "1.หน่วยบริการปฐมภูมิ", status: "4.อยู่ระหว่างดำเนินการ", tambon: "สิ", amphoe: "ขุนหาญ", issue: "" },
+            { code: "10933", name: "โรงพยาบาลชุมชนขุนหาญ", type: "3.หน่วยบริการที่รับการส่งต่อทั่วไป", status: "4.อยู่ระหว่างดำเนินการ", tambon: "สิ", amphoe: "ขุนหาญ", issue: "R0101" },
+            { code: "14286", name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านโพธิ์น้อย", type: "1.หน่วยบริการปฐมภูมิ", status: "4.อยู่ระหว่างดำเนินการ", tambon: "กระหวัน", amphoe: "ขุนหาญ", issue: "" },
+            { code: "G8891", name: "กลุ่มกำลังใจขุนหาญ", type: "6.หน่วยบริการที่รับการส่งต่อเฉพาะด้านบริการเอชไอวีและโรคติดต่อทางเพศสัมพันธ์ในชุมชน", status: "1.ผ่านการตรวจประเมิน", tambon: "กันทรอม", amphoe: "ขุนหาญ", issue: "R0216" },
+            { code: "Q3264", name: "ศูนย์บริการคนพิการการดำรงชีวิตอิสระคนพิการขุนหาญ", type: "5.หน่วยบริการที่รับการส่งต่อเฉพาะด้านฟื้นฟูสมรรถภาพทางการแพทย์", status: "5.ยังไม่ดำเนินการ", tambon: "โพธิ์วงศ์", amphoe: "ขุนหาญ", issue: "R0214" },
+            { code: "T0047", name: "วัดโพธิ์น้อย", type: "7.หน่วยบริการที่รับการส่งต่อเฉพาะด้านสถานชีวาภิบาล", status: "5.ยังไม่ดำเนินการ", tambon: "กระหวัน", amphoe: "ขุนหาญ", issue: "R0218" },
+            { code: "00297", name: "สำนักงานสาธารณสุขอำเภอขุนหาญ", type: "4.หน่วยบริการที่รับการส่งต่อเฉพาะด้านสร้างเสริมสุขภาพและป้องกันโรค", status: "2.รอพิจารณา", tambon: "กระหวัน", amphoe: "ขุนหาญ", issue: "R0212" }
         ];
 
         const tableBody = document.getElementById('tableBody');
         const searchInput = document.getElementById('searchInput');
         const filterBtns = document.querySelectorAll('.filter-btn');
-        
+
         let currentFilter = 'all';
         let searchQuery = '';
 
-        // ฟังก์ชันจัดหมวดหมู่สถานะ
+        // จัดหมวดหมู่สถานะ
         function getStatusCategory(statusText) {
             if (statusText.includes('รอพิจารณา') || statusText.includes('ผ่านการตรวจประเมิน')) {
-                return 'pass'; // ถือว่าเสร็จสิ้น/รอ สปสช.
-            } else if (statusText.includes('ไม่ผ่าน') || statusText.includes('ยังไม่ดำเนินการ') || statusText.includes('อยู่ระหว่างดำเนินการ')) {
-                return 'fail'; // ถือว่าต้องแก้ไข/ดำเนินการต่อ
+                return 'pass';
+            } else if (statusText.includes('ยังไม่ดำเนินการ')) {
+                return 'fail';
+            } else if (statusText.includes('อยู่ระหว่างดำเนินการ')) {
+                return 'pending';
             } else {
                 return 'other';
             }
         }
 
-        // ฟังก์ชันสร้างป้ายสถานะ
+        // ป้ายสถานะ
         function renderStatusPill(statusText) {
             const category = getStatusCategory(statusText);
             let className = 'status-pending';
@@ -353,70 +360,67 @@
 
             if (category === 'pass') {
                 className = 'status-pass';
-                displayText = '✅ ' + statusText; 
+                displayText = '✅ ' + statusText;
             } else if (category === 'fail') {
                 className = 'status-fail';
-                displayText = '⚠️ ' + statusText; 
+                displayText = '🔴 ' + statusText;
+            } else if (category === 'pending') {
+                className = 'status-pending';
+                displayText = '🟡 ' + statusText;
             }
 
             return `<span class="status-pill ${className}">${displayText}</span>`;
         }
 
-        // ฟังก์ชันอัปเดตข้อมูล
+        // Render ตารางและ KPI
         function renderTable() {
             tableBody.innerHTML = '';
-            let total = 0, pass = 0, fail = 0, other = 0;
+            let total = rawData.length;
+            let pass = 0, fail = 0, pending = 0;
 
-            const filteredData = rawData.filter(item => {
-                const category = getStatusCategory(item.status);
-                const matchFilter = currentFilter === 'all' || category === currentFilter;
-                const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                    item.tambon.toLowerCase().includes(searchQuery.toLowerCase());
-                return matchFilter && matchSearch;
-            });
-
-            // คำนวณ KPI
             rawData.forEach(item => {
-                total++;
                 const cat = getStatusCategory(item.status);
                 if (cat === 'pass') pass++;
                 else if (cat === 'fail') fail++;
-                else other++;
+                else if (cat === 'pending') pending++;
             });
 
             document.getElementById('totalCount').innerText = total;
             document.getElementById('passCount').innerText = pass;
             document.getElementById('failCount').innerText = fail;
-            document.getElementById('pendingCount').innerText = other;
+            document.getElementById('pendingCount').innerText = pending;
 
-            // วาดตาราง
+            const filteredData = rawData.filter(item => {
+                const category = getStatusCategory(item.status);
+                const matchFilter = currentFilter === 'all' || category === currentFilter;
+                const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                    item.tambon.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                    item.code.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchFilter && matchSearch;
+            });
+
             if (filteredData.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-muted); padding: 2rem;">ไม่พบข้อมูลที่ค้นหา</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted); padding: 2rem;">ไม่พบข้อมูลที่ค้นหา</td></tr>`;
                 return;
             }
 
             filteredData.forEach((item) => {
                 const tr = document.createElement('tr');
-                const category = getStatusCategory(item.status);
-                
-                let rowClass = '';
-                if (item.issue !== "" || category === 'fail') {
-                    rowClass = 'row-issue';
-                }
-
+                let rowClass = item.issue !== "" ? 'row-issue' : '';
                 tr.className = rowClass;
 
                 tr.innerHTML = `
+                    <td style="color: var(--neon-blue); font-weight: 500;">${item.code}</td>
                     <td><strong>${item.name}</strong></td>
                     <td style="color: var(--text-muted); font-size: 0.85rem;">${item.type}</td>
                     <td style="color: var(--text-muted);">${item.status}</td>
                     <td>${item.tambon}</td>
-                    <td style="color: ${item.amphoe === 'ขุนหาญ' ? 'var(--neon-blue)' : 'var(--text-muted)'};">${item.amphoe}</td>
+                    <td style="color: var(--neon-blue);">${item.amphoe}</td>
                     <td>${renderStatusPill(item.status)}</td>
                     <td style="color: ${item.issue ? 'var(--neon-red)' : 'var(--text-muted)'}; font-weight: ${item.issue ? 'bold' : 'normal'};">
                         ${item.issue || '-'}
                     </td>
-                    <td><button class="btn-view" onclick="alert('ดูรายละเอียด: ${item.name}')">ดูข้อมูล</button></td>
+                    <td><button class="btn-view" onclick="alert('หน่วยงาน: ${item.name}\nตำบล: ${item.tambon}\nข้อไม่ผ่าน: ${item.issue || 'ไม่มี'}')">ดูข้อมูล</button></td>
                 `;
                 tableBody.appendChild(tr);
             });
@@ -437,7 +441,6 @@
             });
         });
 
-        // เริ่มต้น
         renderTable();
     </script>
 </body>
