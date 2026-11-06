@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPP Tracker 2570 | อ.ขุนหาญ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b1120;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --neon-green: #00ff87;
+            --neon-red: #ff3366;
+            --neon-yellow: #fbbf24;
+            --neon-blue: #38bdf8;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 255, 135, 0.1) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, #38bdf8, #00ff87);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .search-bar input {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            outline: none;
+            width: 300px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .kpi-title {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .text-green { color: var(--neon-green); text-shadow: 0 0 10px rgba(0, 255, 135, 0.3); }
+        .text-red { color: var(--neon-red); text-shadow: 0 0 10px rgba(255, 51, 102, 0.3); }
+        .text-yellow { color: var(--neon-yellow); }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+        }
+
+        /* Data Table */
+        .table-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow-x: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-muted);
+            padding: 1rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.95rem;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Status Pills */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .status-pass {
+            background: rgba(0, 255, 135, 0.1);
+            color: var(--neon-green);
+            border: 1px solid rgba(0, 255, 135, 0.3);
+        }
+
+        .status-fail {
+            background: rgba(255, 51, 102, 0.1);
+            color: var(--neon-red);
+            border: 1px solid rgba(255, 51, 102, 0.3);
+        }
+
+        .btn-view {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-view:hover {
+            background: var(--neon-blue);
+            color: #000;
+        }
+
+        /* Highlight Row for issues */
+        .row-issue {
+            border-left: 3px solid var(--neon-red);
+            background: rgba(255, 51, 102, 0.05);
+        }
+
+        /* AI Assistant Floating Button */
+        .ai-assistant {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #38bdf8, #00ff87);
+            color: #000;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 255, 135, 0.4);
+            transition: transform 0.3s;
+        }
+
+        .ai-assistant:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <h1>CPP TRACKER 2570</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">ระบบติดตามสถานะการประเมิน สปสช. (เฉพาะอำเภอขุนหาญ)</p>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อ รพ.สต., ตำบล...">
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-title">สถานบริการทั้งหมด (ในขุนหาญ)</div>
+            <div class="kpi-value" id="totalCount">0</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">🟢 เสร็จสิ้น (รอพิจารณา/ผ่าน)</div>
+            <div class="kpi-value text-green" id="passCount">0</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">🔴 ต้องแก้ไข / ยังไม่ผ่าน</div>
+            <div class="kpi-value text-red" id="failCount">0</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">⚪ อื่นๆ / อยู่ระหว่างดำเนินการ</div>
+            <div class="kpi-value text-yellow" id="pendingCount">0</div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+        <button class="filter-btn active" data-filter="all">ทั้งหมด</button>
+        <button class="filter-btn" data-filter="pass">🟢 เสร็จสิ้น/รอพิจารณา</button>
+        <button class="filter-btn" data-filter="fail">🔴 ต้องแก้ไข (ไม่ผ่าน)</button>
+        <button class="filter-btn" data-filter="other">⚪ อื่นๆ</button>
+    </div>
+
+    <!-- Data Table -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ชื่อหน่วยงาน</th>
+                    <th>ประเภท</th>
+                    <th>สถานะการประเมิน</th>
+                    <th>ตำบล</th>
+                    <th>อำเภอ</th>
+                    <th>สถานะสรุป</th>
+                    <th>ข้อที่ไม่ผ่านการประเมิน</th>
+                    <th>จัดการ</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Data will be injected here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- AI Assistant (Mockup) -->
+    <div class="ai-assistant" onclick="alert('🤖 AI Assistant: ข้อมูลนี้คือเฉพาะอำเภอขุนหาญครับ!')">
+        🤖
+    </div>
+
+    <script>
+        // ข้อมูลจริงจากภาพ เฉพาะอำเภอขุนหาญ (27 รายการ)
+        const rawData = [
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านหนองหญ้า", type: "หน่วยบริการปฐมภูมิ", status: "รอพิจารณา", tambon: "ขุนหาญ", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านสหักดิน", type: "หน่วยบริการปฐมภูมิ", status: "ยังไม่ดำเนินการ", tambon: "ปากอ", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านสระโกฎิ", type: "หน่วยบริการปฐมภูมิ", status: "รอพิจารณา", tambon: "ปากอ", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านทับยา", type: "หน่วยบริการปฐมภูมิ", status: "ยังไม่ดำเนินการ", tambon: "ปากอ", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนาเหนือ ตำบลพราน", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "พราน", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านบางเบา", type: "หน่วยบริการปฐมภูมิ", status: "ยังไม่ดำเนินการ", tambon: "พราน", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านข่าหลึก", type: "หน่วยบริการปฐมภูมิ", status: "ยังไม่ดำเนินการ", tambon: "พราน", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านโพธิ์งาม", type: "หน่วยบริการปฐมภูมิ", status: "รอพิจารณา", tambon: "โพธิ์งาม", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านพราน", type: "หน่วยบริการปฐมภูมิ", status: "รอพิจารณา", tambon: "พราน", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านข้าม", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "กระวิน", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านทับจวด", type: "หน่วยบริการปฐมภูมิ", status: "ยังไม่ดำเนินการ", tambon: "ในลุ", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านทุ่งหมื่น", type: "หน่วยบริการปฐมภูมิ", status: "ยังไม่ดำเนินการ", tambon: "ทุ่งหมื่น", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านนาโพธิ์", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "ทุ่งหมื่น", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านทุ่งคา", type: "หน่วยบริการปฐมภูมิ", status: "รอพิจารณา", tambon: "ทุ่งคา", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านไร่", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "ไร่", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านในลุ", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "ในลุ", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านปากน้ำ", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "ปากน้ำ", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลชุมชนบ้านหนองบัว", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "ภูฝ้าย", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลชุมชนบ้านหนองบัว", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "ภูฝ้าย", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลชุมชนบ้านหนองบัว", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "ภูฝ้าย", amphoe: "ขุนหาญ", issue: "" },
+            { name: "โรงพยาบาลชุมชนบ้านหนองบัว", type: "หน่วยบริการที่ทำการส่งต่อทั่วไป", status: "อยู่ระหว่างดำเนินการ", tambon: "ภูฝ้าย", amphoe: "ขุนหาญ", issue: "R0101" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านโพธิ์น้อย", type: "หน่วยบริการปฐมภูมิ", status: "อยู่ระหว่างดำเนินการ", tambon: "กระวิน", amphoe: "ขุนหาญ", issue: "" },
+            { name: "กลุ่มงานกิจการขนาน", type: "หน่วยบริการที่ทำการส่งต่อเฉพาะด้านการอาชีวอนามัยและโรคติดต่อทางเพศสัมพันธ์ในชุมชน", status: "ผ่านการตรวจประเมิน", tambon: "กระวิน", amphoe: "ขุนหาญ", issue: "" },
+            { name: "ศูนย์บริการสาธารณสุขการตรวจวัดชีพจร", type: "หน่วยบริการที่ทำการส่งต่อเฉพาะด้านการแพทย์แผนไทย", status: "ยังไม่ดำเนินการ", tambon: "ในลุ", amphoe: "ขุนหาญ", issue: "R0216" },
+            { name: "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านโพธิ์น้อย", type: "หน่วยบริการที่ทำการส่งต่อเฉพาะด้านอาชีวอนามัย", status: "ยังไม่ดำเนินการ", tambon: "กระวิน", amphoe: "ขุนหาญ", issue: "R0214" },
+            { name: "สำนักงานสาธารณสุขอำเภอขุนหาญ", type: "หน่วยบริการที่ทำการส่งต่อเฉพาะด้านสร้างเสริมสุขภาพและป้องกันโรค", status: "รอพิจารณา", tambon: "กระวิน", amphoe: "ขุนหาญ", issue: "R0212" }
+        ];
+
+        const tableBody = document.getElementById('tableBody');
+        const searchInput = document.getElementById('searchInput');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        // ฟังก์ชันจัดหมวดหมู่สถานะ
+        function getStatusCategory(statusText) {
+            if (statusText.includes('รอพิจารณา') || statusText.includes('ผ่านการตรวจประเมิน')) {
+                return 'pass'; // ถือว่าเสร็จสิ้น/รอ สปสช.
+            } else if (statusText.includes('ไม่ผ่าน') || statusText.includes('ยังไม่ดำเนินการ') || statusText.includes('อยู่ระหว่างดำเนินการ')) {
+                return 'fail'; // ถือว่าต้องแก้ไข/ดำเนินการต่อ
+            } else {
+                return 'other';
+            }
+        }
+
+        // ฟังก์ชันสร้างป้ายสถานะ
+        function renderStatusPill(statusText) {
+            const category = getStatusCategory(statusText);
+            let className = 'status-pending';
+            let displayText = statusText;
+
+            if (category === 'pass') {
+                className = 'status-pass';
+                displayText = '✅ ' + statusText; 
+            } else if (category === 'fail') {
+                className = 'status-fail';
+                displayText = '⚠️ ' + statusText; 
+            }
+
+            return `<span class="status-pill ${className}">${displayText}</span>`;
+        }
+
+        // ฟังก์ชันอัปเดตข้อมูล
+        function renderTable() {
+            tableBody.innerHTML = '';
+            let total = 0, pass = 0, fail = 0, other = 0;
+
+            const filteredData = rawData.filter(item => {
+                const category = getStatusCategory(item.status);
+                const matchFilter = currentFilter === 'all' || category === currentFilter;
+                const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                    item.tambon.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchFilter && matchSearch;
+            });
+
+            // คำนวณ KPI
+            rawData.forEach(item => {
+                total++;
+                const cat = getStatusCategory(item.status);
+                if (cat === 'pass') pass++;
+                else if (cat === 'fail') fail++;
+                else other++;
+            });
+
+            document.getElementById('totalCount').innerText = total;
+            document.getElementById('passCount').innerText = pass;
+            document.getElementById('failCount').innerText = fail;
+            document.getElementById('pendingCount').innerText = other;
+
+            // วาดตาราง
+            if (filteredData.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-muted); padding: 2rem;">ไม่พบข้อมูลที่ค้นหา</td></tr>`;
+                return;
+            }
+
+            filteredData.forEach((item) => {
+                const tr = document.createElement('tr');
+                const category = getStatusCategory(item.status);
+                
+                let rowClass = '';
+                if (item.issue !== "" || category === 'fail') {
+                    rowClass = 'row-issue';
+                }
+
+                tr.className = rowClass;
+
+                tr.innerHTML = `
+                    <td><strong>${item.name}</strong></td>
+                    <td style="color: var(--text-muted); font-size: 0.85rem;">${item.type}</td>
+                    <td style="color: var(--text-muted);">${item.status}</td>
+                    <td>${item.tambon}</td>
+                    <td style="color: ${item.amphoe === 'ขุนหาญ' ? 'var(--neon-blue)' : 'var(--text-muted)'};">${item.amphoe}</td>
+                    <td>${renderStatusPill(item.status)}</td>
+                    <td style="color: ${item.issue ? 'var(--neon-red)' : 'var(--text-muted)'}; font-weight: ${item.issue ? 'bold' : 'normal'};">
+                        ${item.issue || '-'}
+                    </td>
+                    <td><button class="btn-view" onclick="alert('ดูรายละเอียด: ${item.name}')">ดูข้อมูล</button></td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Event Listeners
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderTable();
+        });
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.getAttribute('data-filter');
+                renderTable();
+            });
+        });
+
+        // เริ่มต้น
+        renderTable();
+    </script>
+</body>
+</html>
